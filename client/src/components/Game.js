@@ -1,19 +1,34 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import io from 'socket.io-client';
 import {GameStateContext} from "../GameStateProvider";
+import {EditableRole} from "./EditableRole";
+import {Role} from "./Role";
+import {roles} from "../data/roles";
+
+function getSelf(game_state, player_name) {
+    return game_state.players.find(p => p.name === player_name);
+}
 
 export function Game() {
     const { setGameState, game_state, game_id } = useContext(GameStateContext);
+    const player_name = window.localStorage.getItem('player_name');
+    const send = useRef(null);
+    const [selected_role, setSelectedRole] = useState('custom');
 
     useEffect(() => {
         const game$ = io(`/${game_id}`);
         console.log('connecting to ', game_id);
 
+        send.current = msg => {
+            console.log('sending', msg);
+            game$.send(msg);
+        };
+
         game$.on('connect', () => {
             console.log('connected to game');
             game$.send({
                 type: 'join',
-                player_name: window.localStorage.getItem('player_name')
+                player_name,
             });
         });
 
@@ -69,7 +84,7 @@ export function Game() {
                     {
                         game_state.players.map(player => (
                             <div>
-                                {player.name} { player.alive ? '(living)' : '(dead)' } { player.is_gm && '- GM'}
+                                {player.name} { player.is_gm ? '- GM' : player.alive ? '(living)' : '(dead)' }
                             </div>
                         ))
                     }
@@ -77,6 +92,7 @@ export function Game() {
                 <main
                     style={{
                         flex: '1 0 auto',
+                        paddingBottom: 30,
                     }}
                 >
                     {
@@ -91,42 +107,60 @@ export function Game() {
                                 >
                                     <h2>Roles</h2>
                                     {
-                                        game_state.roles.map(role => (
-                                            <div
-                                                style={{
-                                                    borderBottom: '1px solid #aaa',
-                                                    paddingBottom: 10,
-                                                    marginBottom: 10,
-                                                }}
-                                            >
-                                                <div><strong>{role.name}</strong></div>
-                                                <div>
-                                                    Count: {role.count > 0 ? role.count : 'fill'} {' '}
-                                                    <span style={{ display: 'inline-block', float: 'right'}}>(more / less / fill)</span>
-                                                </div>
-                                                <div>
-                                                    Description: <br/>
-                                                    <textarea
-                                                        style={{
-                                                            width: '100%',
-                                                            height: 75,
-                                                        }}
-                                                        value={role.description}
-                                                    />
-                                                </div>
-                                                <div>
-                                                    <input
-                                                        type="button"
-                                                        value='Remove Role'
-                                                    />
-                                                </div>
-                                            </div>
+                                        Object.keys(game_state.roles).map(k => game_state.roles[k]).map(role => (
+                                            getSelf(game_state, player_name).is_gm ? (
+                                                <EditableRole
+                                                    role_id={role.id}
+                                                    onRoleChange={(role) => {
+                                                        send.current({
+                                                            type: 'update_role',
+                                                            ...role,
+                                                        })
+                                                    }}
+                                                />
+                                            ) : (
+                                                <Role role_id={role.id} />
+                                            )
                                         ))
                                     }
-                                    <input
-                                        type="button"
-                                        value='+ Add Role'
-                                    />
+                                    {
+                                        getSelf(game_state, player_name).is_gm && (
+                                            <>
+                                                <select
+                                                    value={selected_role}
+                                                    onChange={e => setSelectedRole(e.target.value)}
+                                                >
+                                                    <option value="custom">Custom</option>
+                                                    {
+                                                        roles.map(role => (
+                                                            <option key={role.id} value={role.id}>{role.name}</option>
+                                                        ))
+                                                    }
+                                                </select>
+                                                <input
+                                                    type="button"
+                                                    value='+ Add Role'
+                                                    onClick={() => {
+                                                        const role = selected_role === 'custom' ? {
+                                                            name: 'New Role',
+                                                            description: 'New Role Description',
+                                                            count: 1,
+                                                            has_own_chat: false,
+                                                        } : {
+                                                            ...roles.find(r => r.id === selected_role),
+                                                            has_own_chat: false,
+                                                            count: 1,
+                                                        };
+
+                                                        send.current({
+                                                            type: 'add_role',
+                                                            ...role,
+                                                        })
+                                                    }}
+                                                />
+                                            </>
+                                        )
+                                    }
                                 </div>
                             </div>
                         )
