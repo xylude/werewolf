@@ -172,6 +172,14 @@ module.exports.handleGameLogic = function(io, game_state) {
 
 						break;
 					}
+					case 'advance': {
+						game_state = produce(game_state, draft => {
+							if(!draft.isDay) {
+								draft.day++;
+							}
+							draft.isDay = !draft.isDay;
+						})
+					}
 				}
 			}
 

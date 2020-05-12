@@ -3,10 +3,8 @@ import { GameStateContext } from '../GameStateProvider';
 import { Chat } from './Chat';
 
 export function GamePlayer() {
-	const { game_state, self } = useContext(GameStateContext);
+	const { game_state, game$, self } = useContext(GameStateContext);
 	const player_role = game_state.roles[self.role];
-
-	console.log('game_state', game_state);
 
 	return (
 		<div
@@ -54,6 +52,11 @@ export function GamePlayer() {
 							<input
 								type="button"
 								value={game_state.isDay ? 'Go to night' : 'Go to morning'}
+								onClick={() => {
+									game$.send({
+										type: 'advance'
+									})
+								}}
 							/>
 						</div>
 					</>

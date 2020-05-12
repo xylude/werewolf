@@ -7,7 +7,7 @@ export function EditableRole({ role_id, onRoleChange }) {
 
 	const [name, setName] = useState(role.name);
 	const [description, setDescription] = useState(role.description);
-	const [count, setCount] = useState(role.count);
+	const [count, setCount] = useState(role.count.toString());
 	const [has_own_chat, setHasOwnChat] = useState(role.has_own_chat);
 
 	function save() {
@@ -23,7 +23,7 @@ export function EditableRole({ role_id, onRoleChange }) {
 	const disable_save =
 		name === role.name &&
 		description === role.description &&
-		count === role.count &&
+		parseInt(count, 10) === role.count &&
 		has_own_chat === role.has_own_chat;
 
 	return (
@@ -35,7 +35,11 @@ export function EditableRole({ role_id, onRoleChange }) {
 					marginBottom: 10,
 				}}
 			>
-				<div>
+				<div
+					style={{
+						marginBottom: 10,
+					}}
+				>
 					Name:{' '}
 					<input
 						type="text"
@@ -46,7 +50,11 @@ export function EditableRole({ role_id, onRoleChange }) {
 						}}
 					/>
 				</div>
-				<div>
+				<div
+					style={{
+						marginBottom: 10,
+					}}
+				>
 					Count:{' '}
 					{role.locked ? (
 						'FILL'
@@ -62,7 +70,11 @@ export function EditableRole({ role_id, onRoleChange }) {
 						/>
 					)}
 				</div>
-				<div>
+				<div
+					style={{
+						marginBottom: 10,
+					}}
+				>
 					Description: <br />
 					<textarea
 						style={{
@@ -75,7 +87,11 @@ export function EditableRole({ role_id, onRoleChange }) {
 						}}
 					/>
 				</div>
-				<div>
+				<div
+					style={{
+						marginBottom: 10,
+					}}
+				>
 					<input
 						checked={has_own_chat}
 						onChange={() => {
@@ -92,12 +108,21 @@ export function EditableRole({ role_id, onRoleChange }) {
 						value={disable_save ? 'Saved' : 'Save'}
 						onClick={save}
 						disabled={disable_save}
+						style={{
+							marginRight: 10,
+						}}
 					/>
 					{!role.locked && (
-						<input onClick={() => { game$.send({
-							type: 'remove_role',
-							id: role_id
-						}) }} type="button" value="Remove Role" />
+						<input
+							onClick={() => {
+								game$.send({
+									type: 'remove_role',
+									id: role_id,
+								});
+							}}
+							type="button"
+							value="Remove Role"
+						/>
 					)}
 				</div>
 			</div>

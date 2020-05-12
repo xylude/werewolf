@@ -107,21 +107,28 @@ function ChatRoom({ room_id }) {
 					</div>
 				))}
 			</div>
-			<div>
-				<form
-					onSubmit={e => {
-						e.preventDefault();
-						addMessage(message);
+			<form
+				style={{
+					display: 'flex',
+					width: '100%',
+					marginTop: 20,
+				}}
+				onSubmit={e => {
+					e.preventDefault();
+					addMessage(message);
+				}}
+			>
+				<input
+					type="text"
+					value={message}
+					onChange={e => setMessage(e.target.value)}
+					style={{
+						flex: '1 0 auto',
+						marginRight: 10,
 					}}
-				>
-					<input
-						type="text"
-						value={message}
-						onChange={e => setMessage(e.target.value)}
-					/>
-					<input type="submit" value="Send" />
-				</form>
-			</div>
+				/>
+				<input type="submit" value="Send" />
+			</form>
 		</div>
 	);
 }

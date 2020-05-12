@@ -6,17 +6,45 @@
     <style>
         body {
             min-width: 1200px;
+            overflow-y: scroll;
         }
         body, html, #app {
             padding: 0;
             margin: 0;
-            height: 100%;
             font-family: 'Jost', sans-serif;
+            height: 100%;
         }
 
         h1, h2, h3, h4, h5, h6 {
             margin: 0;
             padding: 10px 0;
+        }
+
+        input[type=text], input[type=number] {
+            padding: 5px;
+            border-radius: 10px;
+        }
+        select {
+            padding: 5px;
+            border-radius: 10px;
+        }
+        input[type=button], input[type=submit] {
+            border-radius: 10px;
+            background-color: #3d0080;
+            color: #eee;
+            padding: 5px 10px;
+            border: none;
+        }
+
+        input[type=button]:disabled, input[type=submit]:disabled {
+            opacity: .8
+        }
+
+        textarea {
+            border-radius: 10px;
+            line-height: 20px;
+            font-size: 14px;
+            padding: 10px;
         }
     </style>
     <link href="https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,300;0,700;1,400&display=swap" rel="stylesheet">

@@ -25,7 +25,7 @@ export function PlayerPresence({ name }) {
 				>
 					<div>
 						<strong>
-							{player.role} -{' '}
+							{game_state.roles[player.role].name} -{' '}
 							{player.alive ? (
 								<span
                                     style={{ cursor: 'pointer' }}

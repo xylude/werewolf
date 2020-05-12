@@ -16,6 +16,9 @@ export function Game() {
 			style={{
 				display: 'flex',
 				flexDirection: 'column',
+				backgroundColor: game_state.isDay ? '#1770a1' : '#04133e',
+				color: '#eee',
+				minHeight: '100%',
 			}}
 		>
 			<header
