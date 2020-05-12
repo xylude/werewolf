@@ -42,7 +42,6 @@ app.post('/create-game', (req, res) => {
 	const {
 		body: {
 			name,
-			player_name,
 		}
 	} = req;
 

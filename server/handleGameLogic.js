@@ -27,6 +27,32 @@ function createRole(name, description, count, hasOwnChat) {
 	};
 }
 
+function rand(min, max) {
+	return Math.floor(Math.random() * max + min);
+}
+
+function assignRole(game_state, role_id) {
+	// can we even start this:
+	if (!game_state.players.find(p => p.role === null && !p.is_gm)) {
+		console.log('Assign role ended because no players found to assign to.');
+		return game_state;
+	}
+
+	const idx = rand(1, game_state.players.length) - 1;
+	const possiblePlayer = game_state.players[idx];
+
+	if (possiblePlayer.role === null && !possiblePlayer.is_gm) {
+		console.log(`Assigning ${role_id} to ${possiblePlayer.name}`)
+		return produce(game_state, draft => {
+			draft.players[idx].role = role_id;
+		});
+	}
+
+	// if we didn't find it on the first try, try again.
+	console.log('Retrying assign role');
+	return assignRole(game_state, role_id);
+}
+
 // side-effecty as hell
 module.exports.handleGameLogic = function(io, game_state) {
 	io.on('connection', socket => {
@@ -37,6 +63,13 @@ module.exports.handleGameLogic = function(io, game_state) {
 		});
 
 		socket.on('message', msg => {
+
+			if(msg.type === 'chat_message') {
+				console.log('sending chat msg', msg);
+				io.emit('chat_message', msg);
+				return;
+			}
+
 			if (!player_name) {
 				if (msg.type === 'join') {
 					// create player
@@ -98,13 +131,48 @@ module.exports.handleGameLogic = function(io, game_state) {
 					}
 					case 'start_game': {
 						// assign player roles
-						// set started_at
+						Object.keys(game_state.roles)
+							.map(k => game_state.roles[k])
+							.filter(role => role.count > 0)
+							.forEach(role => {
+								new Array(role.count).fill(null).forEach(() => {
+									game_state = assignRole(game_state, role.id);
+								});
+							});
+
+						game_state = produce(game_state, draft => {
+							draft.players = draft.players.map(player => {
+								if (!player.role && !player.is_gm) {
+									console.log(`Assigning villager role to ${player.name}`)
+									player.role = 'villager';
+								}
+								return player;
+							});
+
+							draft.started_at = Date.now();
+						});
 
 						break;
 					}
 				}
 			} else {
 				// game is running
+				switch(msg.type) {
+					case 'update_player': {
+						const { alive, name } = msg;
+
+						game_state = produce(game_state, draft => {
+							draft.players = draft.players.map(player => {
+								if(player.name === name) {
+									player.alive = alive;
+								}
+								return player;
+							});
+						});
+
+						break;
+					}
+				}
 			}
 
 			io.emit('game_state', curateGameState(game_state));
