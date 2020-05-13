@@ -110,5 +110,5 @@ app.post('/create-game', (req, res) => {
 });
 
 http.listen(process.env.NODE_ENV === 'production' ? 80 : 3000, () => {
-	console.log('listening on *:3000');
+	console.log('listening', process.env.NODE_ENV);
 });
