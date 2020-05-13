@@ -14,6 +14,7 @@ function createPlayer(name, is_gm) {
 		is_gm,
 		alive: true,
 		role: null,
+		connected: true,
 	};
 }
 
@@ -60,6 +61,19 @@ module.exports.handleGameLogic = function(io, game_state) {
 
 		socket.on('disconnect', () => {
 			// set player status to offline
+			if(player_name) {
+				console.log(`Player ${player_name} left.`);
+				game_state = produce(game_state, draft => {
+					draft.players = draft.players.map(player => {
+						if(player.name === player_name) {
+							player.connected = false;
+						}
+						return player;
+					});
+				});
+
+				io.emit('game_state', curateGameState(game_state));
+			}
 		});
 
 		socket.on('message', msg => {
@@ -82,6 +96,15 @@ module.exports.handleGameLogic = function(io, game_state) {
 
 						game_state = produce(game_state, draft => {
 							draft.players.push(createPlayer(msg.player_name, is_gm));
+						});
+					} else {
+						game_state = produce(game_state, draft => {
+							draft.players = draft.players.map(player => {
+								if(player.name === player_name) {
+									player.connected = true;
+								}
+								return player;
+							});
 						});
 					}
 				}
@@ -179,6 +202,12 @@ module.exports.handleGameLogic = function(io, game_state) {
 							}
 							draft.isDay = !draft.isDay;
 						})
+
+						break;
+					}
+					case 'end_game': {
+						io.emit('end_game', null);
+						break;
 					}
 				}
 			}

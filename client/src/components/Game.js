@@ -9,7 +9,7 @@ import {GamePlayer} from "./GamePlayer";
 // break out game play into it's own component
 
 export function Game() {
-	const { game_state } = useContext(GameStateContext);
+	const { game_state, game_id } = useContext(GameStateContext);
 
 	return game_state ? (
 		<div
@@ -38,7 +38,7 @@ export function Game() {
 						flex: '1 0 auto',
 					}}
 				>
-					Werewolf - {game_state.name}
+					Werewolf - {game_state.name} ({game_id})
 				</div>
 				<div>{window.localStorage.getItem('player_name')}</div>
 			</header>

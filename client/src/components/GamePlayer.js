@@ -50,12 +50,29 @@ export function GamePlayer() {
 						<div>GM Controls</div>
 						<div>
 							<input
+								style={{
+									marginRight: 10,
+								}}
 								type="button"
 								value={game_state.isDay ? 'Go to night' : 'Go to morning'}
 								onClick={() => {
 									game$.send({
 										type: 'advance'
 									})
+								}}
+							/>
+							<input
+								style={{
+									marginRight: 10,
+								}}
+								type="button"
+								value={'End Game'}
+								onClick={() => {
+									if(confirm('Are you sure you want to end this game?')) {
+										game$.send({
+											type: 'end_game'
+										});
+									}
 								}}
 							/>
 						</div>

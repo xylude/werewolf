@@ -11,6 +11,7 @@ export function PlayerPresence({ name }) {
 				marginBottom: 10,
 				paddingBottom: 10,
 				borderBottom: '1px solid #eee',
+				opacity: player.connected ? 1 : .7,
 			}}
 		>
 			<div>

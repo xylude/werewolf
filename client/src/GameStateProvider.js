@@ -36,6 +36,11 @@ export function GameStateProvider({ children }) {
             setGameState(msg);
         });
 
+        game$.on('end_game', () => {
+           game$.disconnect();
+           window.location.href = '/';
+        });
+
         return () => game$.disconnect();
     }, [ game_id, setGameState ]);
 
