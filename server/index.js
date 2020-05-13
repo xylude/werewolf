@@ -35,7 +35,11 @@ const games = {};
 // this is smelly, but idc bc it's my fuckin birthday
 const cleanups = {};
 
-app.use(express.static('../client/dist'));
+if(process.env.NODE_ENV === 'production') {
+	app.use(express.static('../client/build'));
+} else {
+	app.use(express.static('../client/dist'));
+}
 
 setInterval(() => {
 	// console.log('Clean up, Clean up, Everybody Everywhere!');
@@ -105,6 +109,6 @@ app.post('/create-game', (req, res) => {
 	});
 });
 
-http.listen(3000, () => {
+http.listen(process.env.NODE_ENV === 'production' ? 80 : 3000, () => {
 	console.log('listening on *:3000');
 });
