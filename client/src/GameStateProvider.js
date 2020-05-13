@@ -33,12 +33,12 @@ export function GameStateProvider({ children }) {
         });
 
         game$.on('game_state', msg => {
-            setGameState(msg);
-        });
-
-        game$.on('end_game', () => {
-           game$.disconnect();
-           window.location.href = '/';
+            if(msg.ended) {
+                game$.disconnect();
+                window.location.href = '/';
+            } else {
+                setGameState(msg);
+            }
         });
 
         return () => game$.disconnect();

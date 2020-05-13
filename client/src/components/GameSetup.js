@@ -18,17 +18,6 @@ export function GameSetup() {
             }, 1) <=
         game_state.players.length - 1
 
-    console.log('role ct', Object.keys(game_state.roles)
-        .map(k => game_state.roles[k])
-        .reduce((acc, curr) => {
-            if (curr.count > 0) {
-                acc += curr.count;
-            }
-            return acc;
-        }, 1));
-
-	console.log('players', game_state.players.length - 1);
-
 	return (
 		<div>
 			<div
@@ -36,20 +25,28 @@ export function GameSetup() {
 					width: 400,
 				}}
 			>
-				<div
-					style={{
-						display: 'flex',
-                        alignItems: 'center',
-					}}
-				>
-					<h2 style={{ margin: '10px 20px 10px 0', padding: 0 }}>Roles</h2>
-					<input
-						disabled={!can_start}
-						onClick={() => game$.send({ type: 'start_game' })}
-						type="button"
-						value={can_start ? "Start Game" : "Cannot Start!"}
-					/>
-				</div>
+
+
+						<div
+							style={{
+								display: 'flex',
+								alignItems: 'center',
+							}}
+						>
+							<h2 style={{ margin: '10px 20px 10px 0', padding: 0 }}>Roles</h2>
+							{
+								self.is_gm && (
+									<input
+										disabled={!can_start}
+										onClick={() => game$.send({ type: 'start_game' })}
+										type="button"
+										value={can_start ? "Start Game" : "Cannot Start!"}
+									/>
+								)
+							}
+						</div>
+
+
                 {
                     !can_start && self.is_gm && (
                         <div

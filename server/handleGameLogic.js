@@ -54,9 +54,17 @@ function assignRole(game_state, role_id) {
 	return assignRole(game_state, role_id);
 }
 
-// side-effecty as hell
-module.exports.handleGameLogic = function(io, game_state) {
-	io.on('connection', socket => {
+
+module.exports.handleGameLogic = function(io, game_state, onUpdate) {
+	// weirdly the game_state is not actually mutating it's parent from here. I'm sure it's something dumb
+	// that I'm not getting right now. I just added a callback that will sync the actual games object with this
+	// seemingly internal game_state in this function.
+	const update = (game_state) => {
+		io.emit('game_state', curateGameState(game_state));
+		onUpdate(game_state);
+	}
+
+	const handleConnection = socket => {
 		let player_name = null;
 
 		socket.on('disconnect', () => {
@@ -72,7 +80,7 @@ module.exports.handleGameLogic = function(io, game_state) {
 					});
 				});
 
-				io.emit('game_state', curateGameState(game_state));
+				update(game_state);
 			}
 		});
 
@@ -81,7 +89,6 @@ module.exports.handleGameLogic = function(io, game_state) {
 			if(msg.type === 'chat_message') {
 				console.log('sending chat msg', msg);
 				io.emit('chat_message', msg);
-				return;
 			}
 
 			if (!player_name) {
@@ -206,17 +213,22 @@ module.exports.handleGameLogic = function(io, game_state) {
 						break;
 					}
 					case 'end_game': {
-						io.emit('end_game', null);
+						game_state = produce(game_state, draft => {
+							draft.ended = true;
+						});
 						break;
 					}
 				}
 			}
 
-			io.emit('game_state', curateGameState(game_state));
+			update(game_state);
 		});
-	});
+	};
+
+	io.on('connection', handleConnection);
 
 	return () => {
 		// cleanup
+		io.off('connection', handleConnection);
 	};
 };

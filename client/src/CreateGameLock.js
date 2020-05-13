@@ -10,7 +10,7 @@ export function CreateGameLock({ children }) {
 	const [player_name_input, setPlayerNameInput] = useState(
 		window.localStorage.getItem('player_name') || ''
 	);
-	const [tab, setTab] = useState('create');
+	const [tab, setTab] = useState('join');
 
 	if (!game_id) {
 		return (
@@ -42,11 +42,11 @@ export function CreateGameLock({ children }) {
 							fontSize: 18,
 							cursor: 'pointer',
 							padding: 20,
-							fontWeight: tab === 'create' ? 'bold' : 'normal',
+							fontWeight: tab === 'join' ? 'bold' : 'normal',
 						}}
-						onClick={() => setTab('create')}
+						onClick={() => setTab('join')}
 					>
-						Create a new game
+						Join an existing game
 					</span>
 					- or -
 					<span
@@ -54,11 +54,11 @@ export function CreateGameLock({ children }) {
 							fontSize: 18,
 							cursor: 'pointer',
 							padding: 20,
-							fontWeight: tab === 'join' ? 'bold' : 'normal',
+							fontWeight: tab === 'create' ? 'bold' : 'normal',
 						}}
-						onClick={() => setTab('join')}
+						onClick={() => setTab('create')}
 					>
-						Join an existing game
+						Create a new game
 					</span>
 				</p>
 				<div
