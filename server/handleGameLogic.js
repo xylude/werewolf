@@ -35,7 +35,7 @@ function rand(min, max) {
 function assignRole(game_state, role_id) {
 	// can we even start this:
 	if (!game_state.players.find(p => p.role === null && !p.is_gm)) {
-		console.log('Assign role ended because no players found to assign to.');
+		// console.log('Assign role ended because no players found to assign to.');
 		return game_state;
 	}
 
@@ -43,14 +43,14 @@ function assignRole(game_state, role_id) {
 	const possiblePlayer = game_state.players[idx];
 
 	if (possiblePlayer.role === null && !possiblePlayer.is_gm) {
-		console.log(`Assigning ${role_id} to ${possiblePlayer.name}`)
+		// console.log(`Assigning ${role_id} to ${possiblePlayer.name}`)
 		return produce(game_state, draft => {
 			draft.players[idx].role = role_id;
 		});
 	}
 
 	// if we didn't find it on the first try, try again.
-	console.log('Retrying assign role');
+	// console.log('Retrying assign role');
 	return assignRole(game_state, role_id);
 }
 
@@ -70,7 +70,7 @@ module.exports.handleGameLogic = function(io, game_state, onUpdate) {
 		socket.on('disconnect', () => {
 			// set player status to offline
 			if(player_name) {
-				console.log(`Player ${player_name} left.`);
+				// console.log(`Player ${player_name} left.`);
 				game_state = produce(game_state, draft => {
 					draft.players = draft.players.map(player => {
 						if(player.name === player_name) {
@@ -87,14 +87,14 @@ module.exports.handleGameLogic = function(io, game_state, onUpdate) {
 		socket.on('message', msg => {
 
 			if(msg.type === 'chat_message') {
-				console.log('sending chat msg', msg);
+				// console.log('sending chat msg', msg);
 				io.emit('chat_message', msg);
 			}
 
 			if (!player_name) {
 				if (msg.type === 'join') {
 					// create player
-					console.log('player', msg.player_name, 'joining');
+					// console.log('player', msg.player_name, 'joining');
 					player_name = msg.player_name;
 					if (
 						!game_state.players.find(player => player.name === msg.player_name)
@@ -145,7 +145,7 @@ module.exports.handleGameLogic = function(io, game_state, onUpdate) {
 					}
 					case 'update_role': {
 						const { count, name, description, has_own_chat, id } = msg;
-						console.log('updating role', msg);
+						// console.log('updating role', msg);
 						game_state = produce(game_state, draft => {
 							draft.roles[id].name = name;
 							draft.roles[id].description = description;
@@ -173,7 +173,7 @@ module.exports.handleGameLogic = function(io, game_state, onUpdate) {
 						game_state = produce(game_state, draft => {
 							draft.players = draft.players.map(player => {
 								if (!player.role && !player.is_gm) {
-									console.log(`Assigning villager role to ${player.name}`)
+									// console.log(`Assigning villager role to ${player.name}`)
 									player.role = 'villager';
 								}
 								return player;
