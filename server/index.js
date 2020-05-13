@@ -49,7 +49,8 @@ setInterval(() => {
 			if (
 				game.ended ||
 				(game.players.filter(player => player.connected).length === 0 &&
-					game.started_at + 60000 * 60 * 3 < Date.now())
+					game.created_at + 60000 * 60 * 3 < Date.now()
+				)
 			) {
 				// console.log('deleting game', game.game_id, game.name);
 				cleanups[game.game_id]();
@@ -89,6 +90,7 @@ app.post('/create-game', (req, res) => {
 		{
 			name,
 			started_at: null,
+			created_at: Date.now(),
 			socket,
 			game_id,
 			roles: defaultRoles,
