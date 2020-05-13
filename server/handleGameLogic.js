@@ -4,7 +4,6 @@ const { makeid } = require('./util/makeid');
 function curateGameState(game_state) {
 	return produce(game_state, draft => {
 		delete draft.socket;
-		delete draft.cleanup;
 	});
 }
 
