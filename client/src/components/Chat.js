@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState, useRef } from 'react';
 import { GameStateContext } from '../GameStateProvider';
 
 export function Chat({ style }) {
@@ -59,6 +59,7 @@ function ChatRoom({ room_id }) {
 
 	const [messages, setMessages] = useState([]);
 	const [message, setMessage] = useState('');
+	const scrollRef = useRef(null);
 
 	function addMessage(message) {
 		setMessage('');
@@ -85,6 +86,15 @@ function ChatRoom({ room_id }) {
 		return () => game$.off('chat_message', handleChatMessage);
 	}, [game$, room_id]);
 
+	useEffect(() => {
+		if(scrollRef.current) {
+			scrollRef.current.scrollTop = scrollRef.current.scrollHeight;
+			console.log('el', scrollRef.current.scrollTop, scrollRef.current.scrollHeight);
+		} else {
+			console.log('no scroll ref');
+		}
+	}, [messages])
+
 	return (
 		<div
 			style={{
@@ -100,6 +110,7 @@ function ChatRoom({ room_id }) {
 					height: 500,
 					overflowY: 'scroll',
 				}}
+				ref={scrollRef}
 			>
 				{messages.map(({ name, message }, idx) => (
 					<div key={idx}>
