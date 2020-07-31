@@ -187,6 +187,22 @@ module.exports.handleGameLogic = function(io, game_state, onUpdate) {
 			} else {
 				// game is running
 				switch(msg.type) {
+					case 'vote': {
+						const { name } = msg;
+
+						game_state = produce(game_state, draft => {
+							draft.votes[player_name] = name;
+						});
+
+						break;
+					}
+					case 'clear_votes': {
+						game_state = produce(game_state, draft => {
+							draft.votes = {};
+						})
+
+						break;
+					}
 					case 'update_player': {
 						const { alive, name } = msg;
 
@@ -195,6 +211,12 @@ module.exports.handleGameLogic = function(io, game_state, onUpdate) {
 								if(player.name === name) {
 									player.alive = alive;
 								}
+
+								// this is a symptom of poorly designed state
+								if(!alive) {
+									delete draft.votes[name];
+								}
+
 								return player;
 							});
 						});

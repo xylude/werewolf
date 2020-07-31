@@ -2,7 +2,7 @@ import React, { useContext } from 'react';
 import { GameStateContext } from '../GameStateProvider';
 import { GameSetup } from './GameSetup';
 import { PlayerPresence } from './PlayerPresence';
-import {GamePlayer} from "./GamePlayer";
+import { GamePlayer } from './GamePlayer';
 
 // todo - when setting up game - need to make sure that role count isn't more than the number of players
 // break out game creation into it's own component
@@ -55,10 +55,26 @@ export function Game() {
 						padding: 10,
 					}}
 				>
-					<h2>Players</h2>
-					{game_state.players.map(player => (
-						<PlayerPresence name={player.name} key={player.name} />
-					))}
+					<h2>GM</h2>
+					{game_state.players
+						.filter(player => player.is_gm)
+						.map(player => (
+							<PlayerPresence name={player.name} key={player.name} />
+						))}
+
+					<h2>Living Players</h2>
+					{game_state.players
+						.filter(player => player.alive && !player.is_gm)
+						.map(player => (
+							<PlayerPresence name={player.name} key={player.name} />
+						))}
+
+					<h2>Dead Players</h2>
+					{game_state.players
+						.filter(player => !player.alive && !player.is_gm)
+						.map(player => (
+							<PlayerPresence name={player.name} key={player.name} />
+						))}
 				</aside>
 				<main
 					style={{

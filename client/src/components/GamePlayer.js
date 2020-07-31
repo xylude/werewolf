@@ -54,6 +54,18 @@ export function GamePlayer() {
 									marginRight: 10,
 								}}
 								type="button"
+								value='Clear Votes'
+								onClick={() => {
+									game$.send({
+										type: 'clear_votes'
+									})
+								}}
+							/>
+							<input
+								style={{
+									marginRight: 10,
+								}}
+								type="button"
 								value={game_state.isDay ? 'Go to night' : 'Go to morning'}
 								onClick={() => {
 									game$.send({

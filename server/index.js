@@ -95,6 +95,7 @@ app.post('/create-game', (req, res) => {
 			game_id,
 			roles: defaultRoles,
 			players: [],
+			votes: {},
 			isDay: true,
 			day: 1,
 		},
