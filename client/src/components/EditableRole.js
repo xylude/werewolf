@@ -87,21 +87,25 @@ export function EditableRole({ role_id, onRoleChange }) {
 						}}
 					/>
 				</div>
-				<div
-					style={{
-						marginBottom: 10,
-					}}
-				>
-					<input
-						checked={has_own_chat}
-						onChange={() => {
-							setHasOwnChat(v => !v);
-						}}
-						type="checkbox"
-					/>{' '}
-					Can chat with other players with this role? (GM and players with this
-					role will be able to chat with each other)
-				</div>
+				{
+					role.id !== 'villager' && (
+						<div
+							style={{
+								marginBottom: 10,
+							}}
+						>
+							<input
+								checked={has_own_chat}
+								onChange={() => {
+									setHasOwnChat(v => !v);
+								}}
+								type="checkbox"
+							/>{' '}
+							Can chat with other players with this role? (GM and players with this
+							role will be able to chat with each other)
+						</div>
+					)
+				}
 				<div>
 					<input
 						type="button"
