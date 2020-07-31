@@ -32,7 +32,7 @@ export function PlayerPresence({ name }) {
 		>
 			<div>
 				{player.name}
-				{game_state.started_at && !player.is_gm && (
+				{game_state.started_at && !player.is_gm && player.alive && (
 					<div
 						style={{
 							float: 'right',
